@@ -6,10 +6,11 @@ function [Fn,Vn,cost] = BTND(FC,K,param,init)
 %V = activation profils
 %cost = cost function over iteration of the BTND Decomposition
 
-[F,V,cost] = BTND_Method(FC,K,param,'SVD');
+
 
 
 if init > 1
+    [F,V,cost] = BTND_Method(FC,K,param,'SVD');
    for i =1:(init-1)
     [Fbis,Vbis,costbis] = BTND_Method(FC,K,param,'RANDOM');
        if costbis(end)<cost(end)%Keep only the initialisation with the solution tha minimize the cost function
@@ -19,6 +20,8 @@ if init > 1
           cost=costbis;
        end
    end
+else
+   [F,V,cost] = BTND_Method(FC,K,param,'RANDOM'); 
 end
 
 

@@ -61,7 +61,7 @@ ResNow=Score(nu,gamma, eta, 1);
            nu=SF2(TV_Condat_v2(u,eta*i),gamma*i)/(1+i);
            ResNow=Score(nu,gamma, eta, 1); 
            if(i>gammaMax)
-               'Problem gammaMax too small'
+               Warning('Little problem, gammaMax too small')
                ResNow=tau+1;
                break
            end

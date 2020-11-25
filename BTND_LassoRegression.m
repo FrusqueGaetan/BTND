@@ -1,5 +1,5 @@
 function F = BTND_LassoRegression(Y,D,lambda,A)
-%Perform lasso regression with FISTA acceleration
+%Performs lasso regression with FISTA acceleration
 
 if nargin <4
 A = (pinv(D)*Y)';

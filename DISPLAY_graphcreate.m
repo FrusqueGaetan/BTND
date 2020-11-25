@@ -1,43 +1,26 @@
-function [] = DISPLAY_graphcreate(F,nn,lambda,NamePos,ttext,ff)
+function [] = DISPLAY_graphcreate(F,nn,lambda,NamePosNow,ttext,ff)
 
-N = length(NamePos);
-[~, iF, ~] = FPLV_infoG(N,NamePos);
+N = length(NamePosNow);
 
+%Select only value above lambda
+F = F.*(F>lambda);
+zf = (F(:,nn)-lambda)*(1/(1-lambda));
 
-Sel = sum(F>lambda,2)>=1;
-zf = zeros(size(F(:,nn)));
-zf(Sel) = (F(Sel,nn)-lambda)*(1/(1-lambda));
-
-Total = iF(Sel,:);
-Vectt = reshape(Total,1,numel(Total));
-uVectt = unique(Vectt);
-
-Gsel = ismember(1:N,uVectt);
-
-NamePosNow = {NamePos{Gsel}};
-
-Gfc = GetUnderDiag(zf,N);
+%Generate graph adjency matrix
+GNow =  ConvertToAdj(zf,N);
+%Generate location of the nodes of the circular graph
+[xcircle,ycircle] = circ(N);
 
 
-GNow = Gfc(Gsel,Gsel);
-
-
-[xcircle,ycircle] = circ(length(uVectt));
-
-
+%Nodes location and nodes names
 h = plot(xcircle, ycircle,'g.','MarkerSize',25);
 axis square;
 hold on
-
-
-
 t = atan2(xcircle,ycircle);
 textt=[];
 longlabel = 1.1;
-for i =1:length(uVectt)
+for i =1:N
     NameReduced = NamePosNow{i};
-    
-    
     textt{i} = text(xcircle(i).*longlabel, ycircle(i).*longlabel, NameReduced, 'FontSize',14,'Color','b');
     if xcircle(i) > 0
         textt{i}.Rotation = fix(180*(-t(i)/pi +0.5 ));
@@ -46,7 +29,6 @@ for i =1:length(uVectt)
       textt{i}.Rotation = fix(180*(-t(i)/pi -0.5 ));
     end
 end
-
 xlim([-longlabel,longlabel])
 ylim([-longlabel,longlabel])
 set(gca,'XTick',[],'YTick',[])
@@ -54,19 +36,22 @@ set(gca,'XTick',[],'YTick',[])
 
     
        
-
+%Link representation on a Poincaré disc
 color = flip(hot(125));
 Ncolorbar = 100;
-color = color(2:Ncolorbar,:);
-for i =1:(size(GNow,1)-1)
-    for j =(i+1):size(GNow,1)
-        if(GNow(i,j)>0)
+color = color(20:120,:);
+[~,Nord] = sort(F(:,nn));
+[~, iF] = FPLV_infoG(N);
 
-            u = [xcircle(i),ycircle(i)];
-            v = [xcircle(j),ycircle(j)];
+for j = 1:size(F,1)
+    i=Nord(j);
+        if(GNow(iF(i,1),iF(i,2))>0)
+
+            u = [xcircle(iF(i,1)),ycircle(iF(i,1))];
+            v = [xcircle(iF(i,2)),ycircle(iF(i,2))];
             
-            if and(abs(u(1)+v(1))<0.0000001,abs(u(2)+v(2))<0.0000001)%diametric points
-               line([u(1),v(1)],[u(2),v(2)],'color',color(min(floor(Ncolorbar*GNow(i,j))+1,Ncolorbar-1),:),'linewidth',2)
+            if and(abs(u(1)+v(1))<0.0000001,abs(u(2)+v(2))<0.0000001)
+               line([u(1),v(1)],[u(2),v(2)],'color',color(min(floor(Ncolorbar*GNow(iF(i,1),iF(i,2)))+1,Ncolorbar-1),:),'linewidth',2)
             else
                x0 = -(u(2)-v(2))/(u(1)*v(2)-u(2)*v(1));
                y0 = (u(1)-v(1))/(u(1)*v(2)-u(2)*v(1));
@@ -81,18 +66,14 @@ for i =1:(size(GNow,1)-1)
                
                xunit = r0 * cos(theta) + x0;
                yunit = r0 * sin(theta) + y0;
-%min(floor(Ncolorbar*GNow(i,j)),Ncolorbar)
-               %h = plot(xunit,yunit,'color',color(min(floor(N*GNow(i,j))+1,101),:),'linewidth',2);
-               h = plot(xunit,yunit,'color',color(min(floor(Ncolorbar*GNow(i,j))+1,Ncolorbar-1),:),'linewidth',2);
+               h = plot(xunit,yunit,'color',color(min(floor(Ncolorbar*GNow(iF(i,1),iF(i,2)))+1,Ncolorbar-1),:),'linewidth',2);
 
             end
         end
-    end
+
 end
 
     
-    
-
 
     ax = gca;
     outerpos = ax.OuterPosition;
@@ -116,7 +97,7 @@ hold off
 end
 
 
-function [xcircle,ycircle] = circ(N)
+function [xcircle,ycircle] = circ(N) % Location of node on a circle
 
 
 th = 2*(0:pi/N:(pi-pi/N));
@@ -129,7 +110,8 @@ ycircle = r * sin(th) + y;
 end
 
 
-function [iG, iF, iP] = FPLV_infoG(n,Position,Location,FC,col)
+function [iG, iF] = FPLV_infoG(n)%iG: corresponding FC vector index on the Adj matrix
+                                 %iF: corresponding Adj matrix index on the FC vector
 
 iG = GetUnderDiag(1:nchoosek(n,2),n);
 
@@ -148,64 +130,11 @@ end
 
 iF = [iA',iB'];
 
-
-if nargin >1
-    iP=[];
-for i =1:nchoosek(n,2)
-    iP{i} = [Position{iA(i)},'--',Position{iB(i)}];
-end
-
-if nargin > 3
-  if nargin==4
-   for k = 1:size(FC,1)
-    plot3(Location(FC(k,:),1),Location(FC(k,:),2),Location(FC(k,:),3),'r')
-    xlabel('x')
-    ylabel('y')
-    zlabel('z')
-    hold on
-   end 
-  elseif nargin==5
-   for k = 1:size(FC,1)
-    plot3(Location(FC(k,:),1),Location(FC(k,:),2),Location(FC(k,:),3),col)
-    xlabel('x')
-    ylabel('y')
-    zlabel('z')
-    hold on
-   end 
-  end
-    
-end
-
-if nargin>2
-    
-    plot3(Location(:,1),Location(:,2),Location(:,3),'b.')
-    text(Location(:,1),Location(:,2),Location(:,3),Position)
-end
-
-end
-
 end
 
 
-function V =  GetUnderDiag(M,k) % M matrice d'adjacence
+function V =  ConvertToAdj(M,k) % Convert a vector with nchoosek(N,2) element to an adjacency matrix size NxN
 
-if(k == 0)
-S = size(M);
-
-sV = nchoosek(S(1),2);
-
-V = zeros(sV,1);
-
-a = 1;
-for i = 1:(S(1)-1)
-    for j = (i+1):S(2)
-        
-         V(a) = M(i,j);
-         a = a +1;
-    end
-end
-else
-    
    M = squeeze(M);
    V = zeros(k,k);
    
@@ -220,8 +149,6 @@ else
        end
    end
    
-    
-end
 end
 
 

@@ -9,7 +9,7 @@ end
 
 
 %hyperparameters
-lambda = param(1);
+lambda = S{3}*param(1);
 gamma = param(2);
 eta = param(3);
 
@@ -19,7 +19,7 @@ for i =1:S{3}
     Zeta(i) = (norm(T{1},'fro')^2)/(norm(T{i},'fro')^2);
     ZetaMatrix = [ZetaMatrix, sqrt(Zeta(i))*ones(1,S{2}(i))];
 end
-lambda = S{3}*lambda;
+
 
 TT = horzcat(T{:}).*repmat(ZetaMatrix,S{1},1);
 
