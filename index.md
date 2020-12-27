@@ -1,16 +1,16 @@
 ---
 layout: default
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
 ---
 # Associated publication #
 
-
 Codes from the article : \
  **Semi-automatic extraction of functional dynamic networks describing patient's epileptic seizures** [[pdf]](../Support/fneur-11-579725.pdf) [[frontiers]](https://www.frontiersin.org/articles/10.3389/fneur.2020.579725/full)\
-Gaëtan Frusque, Pierre Borgnat, Paulo Gonçalves, Julien Jung, 
+Gaëtan Frusque, Pierre Borgnat, Paulo Gonçalves, Julien Jung,
 Frontiers in Neurology, 09-2020
 
-
 # Overview of the codes provided #
+
 [BTNDmain.m](./Code_BTND/BTNDmain.m): Main file, divided in two part. First, an exemple using functional connectivity (FC) data from 3 seizures of a patient with:
 
 * [DataFC.mat](./Code_BTND/DataFC.mat): The FC matrix of the 3 seizures (DataFC{i} is the FC matrix from the seizure i).
@@ -19,7 +19,7 @@ Frontiers in Neurology, 09-2020
 
 Then, a second part explains how to apply the code with your dataset (see also section "Description of the method").
 
-[FC_dynamic.m](./Code_BTND/FC_dynamic.m): Compute a time-varying network for each seizure with a FC measure. The arguments are **Signal** the list of seizure recordings; **method** the FC mesures used (Pearson correlation, Phase Locking Value or Amplitude Envelope Correlation); **Freq** the sampling frequency; **TimeSegment** the size of the temporal segments (in s) used to compute a FC graph; **Step** a graph is computed at every 'Step' second. 
+[FC_dynamic.m](./Code_BTND/FC_dynamic.m): Compute a time-varying network for each seizure with a FC measure. The arguments are **Signal** the list of seizure recordings; **method** the FC mesures used (Pearson correlation, Phase Locking Value or Amplitude Envelope Correlation); **Freq** the sampling frequency; **TimeSegment** the size of the temporal segments (in s) used to compute a FC graph; **Step** a graph is computed at every 'Step' second.
 
 [BTND.m](./Code_BTND/BTND.m): Decompose the time-varying network using the criteria (3) from the article. The arguments are **X** the time-varying network represented as a list of FC matrices; **K** number of subgraph wanted; **[lambda,gamma,eta]** the three parameters of the BTND; **init** number of different initialisations.
 
@@ -33,9 +33,6 @@ The BTND is solved by alternating two steps :
 
 
 [DISPLAY_graphcreate.m](./Code_BTND/DISPLAY_graphcreate.m): Tool to visualise the matrix F as K circular graphs.
-
-
-
 
 # Desciption of the method #
 
@@ -57,16 +54,16 @@ We provide now the code to perform all the steps presented in this figure.
 
 ## 1 - Get the data ##
 
-In order to use the BTND pipeline, the dataset have to be arranged as a list of reccording (as illustrated in the figure 1.(a) of the paper). 
+In order to use the BTND pipeline, the dataset have to be arranged as a list of reccording (as illustrated in the figure 1.(a) of the paper).
 
 Considering as an example two recordings named "RecordingSeizure1.mat" and "RecordingSeizure2.mat" illustrated here:
 ![Recordings](./Figures/SigSig.png)
-Then a variable **Signal** have to be created with : 
+Then a variable **Signal** have to be created with :
 
 * **Signal{1}** = RecordingSeizure1
 * **Signal{2}** = RecordingSeizure2
 
-Notice the recordings have to be already filtered in a bandwidth of interest. 
+Notice the recordings have to be already filtered in a bandwidth of interest.
 
 ## 2 - Time-varying network inference ##
 
@@ -90,17 +87,18 @@ The function [BTND.m](./Code_BTND/BTND.m) entail the transition from the step fi
 
 with **F** containing the **K** subgraphs (in the columns of the matrix) and **V** containing the activation profile of each subgraph specific to each seizures (V{i} activation profiles related to the seizure i). 
 
-The differents argments are: 
+The differents argments are:
+
 * **K** the number of subgraphs wanted.
+
 * **lambda**, **gamma** and **eta** the $$\lambda$$, $$\gamma$$ and $$\eta$$ parameters from the equation (3) of the paper. As presented in the supp material, considering $${\rm \mathbf{X}} \in \mathbb{R}^{L \times T(s)}$$, then  $$\gamma_s = T(1)/T(S) \gamma$$ and $$\eta_s = T(1)/T(S) \eta$$. The parameters $$\gamma_s$$ and $$\eta_s$$ vary in function of the duration of the seizure.
 * **init**: because the criteria (3) is non convex, different initialisations can lead to different solutions. we compute for **init** different initialisations a locales minimum of the criteria (3) and retain the best result
 
 **Recommendations for the parameters selection:**  We recommend first to merge the sparsity parameters $$\lambda$$=$$\gamma$$. There is now two parameters to select: $$\lambda$$ and $$\eta$$. The user can play with these two parameters, we propose in [BTNDmain.m](./Code_BTND/BTNDmain.m) a configuration that work well most of the time in our dataset $$\lambda$$=0.4 and $$\eta$$=0.2. In the paper, we fixed $$\eta$$=0.2 and selected the $$\lambda$$=0.4 according to a rule discribed in the [Supplementary Material](https://www.frontiersin.org/articles/10.3389/fneur.2020.579725/full#supplementary-material). We quickly describe the rule: considering the following score $$a_{\lambda} = \sum_{s=1}^{S} { \mid \mid  \mathbf{X}\{s\} - \mathbf{F} \mathbf{V}^t\{s\}  \mid \mid^2_F}$$. We consider the value of this score when $$\lambda$$=0 and $$\lambda=\infty$$ (corresponding to $$a_{\infty} = \sum_{s=1}^{S} { \mid \mid  \mathbf{X}\{s\} \mid \mid^2_F}$$.). The we are looking for a compromise between no regularisation and a too strong regularisation by looking for the value of $$\lambda$$ such as $${a_\lambda \approx 0.8(a_{\infty} - a_{0}) + a_{0}}$$.
 
+select the parameter $$\lambda$$ such as 80% of the energy
 
-select the parameter $$\lambda$$ such as 80% of the energy 
-
-we select the parameter $\lambda$, such that $80\%$ of the information contained in the most faithful reconstruction is eliminated
+we select the parameter $$\lambda $$, such that $$80\% $$ of the information contained in the most faithful reconstruction is eliminated
 
 ## 4 - Visualisation ##
 
