@@ -1,3 +1,7 @@
+---
+layout: default
+usemathjax: true
+---
 # Associated publication #
 
 
