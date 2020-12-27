@@ -1,3 +1,6 @@
+---
+layout: default
+---
 # Associated publication #
 
 
@@ -89,7 +92,7 @@ with **F** containing the **K** subgraphs (in the columns of the matrix) and **V
 
 The differents argments are: 
 * **K** the number of subgraphs wanted.
-* **lambda**, **gamma** and **eta** the $$\lambda$$, $$\gamma$$ and $$\eta$$ parameters from the equation (3) of the paper. As presented in the supp material, considering $${\rm \mathsbf{X}} \in \mathbb{R}^{L \times T(s)}$$, then  $$\gamma_s = T(1)/T(S) \gamma$$ and $$\eta_s = T(1)/T(S) \eta$$. The parameters $$\gamma_s$$ and $$\eta_s$$ vary in function of the duration of the seizure.
+* **lambda**, **gamma** and **eta** the $$\lambda$$, $$\gamma$$ and $$\eta$$ parameters from the equation (3) of the paper. As presented in the supp material, considering $${\rm \mathbf{X}} \in \mathbb{R}^{L \times T(s)}$$, then  $$\gamma_s = T(1)/T(S) \gamma$$ and $$\eta_s = T(1)/T(S) \eta$$. The parameters $$\gamma_s$$ and $$\eta_s$$ vary in function of the duration of the seizure.
 * **init**: because the criteria (3) is non convex, different initialisations can lead to different solutions. we compute for **init** different initialisations a locales minimum of the criteria (3) and retain the best result
 
 **Recommendations for the parameters selection:**  We recommend first to merge the sparsity parameters $$\lambda$$=$$\gamma$$. There is now two parameters to select: $$\lambda$$ and $$\eta$$. The user can play with these two parameters, we propose in [BTNDmain.m](./Code_BTND/BTNDmain.m) a configuration that work well most of the time in our dataset $$\lambda$$=0.4 and $$\eta$$=0.2. In the paper, we fixed $$\eta$$=0.2 and selected the $$\lambda$$=0.4 according to a rule discribed in the [Supplementary Material](https://www.frontiersin.org/articles/10.3389/fneur.2020.579725/full#supplementary-material). We quickly describe the rule: considering the following score $$a_{\lambda} = \sum_{s=1}^{S} { \mid \mid  \mathbf{X}\{s\} - \mathbf{F} \mathbf{V}^t\{s\}  \mid \mid^2_F}$$. We consider the value of this score when $$\lambda$$=0 and $$\lambda=\infty$$ (corresponding to $$a_{\infty} = \sum_{s=1}^{S} { \mid \mid  \mathbf{X}\{s\} \mid \mid^2_F}$$.). The we are looking for a compromise between no regularisation and a too strong regularisation by looking for the value of $$\lambda$$ such as $${a_\lambda \approx 0.8(a_{\infty} - a_{0}) + a_{0}}$$.
