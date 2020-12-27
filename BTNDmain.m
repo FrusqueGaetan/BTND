@@ -98,10 +98,10 @@ Step = 1;% A graph is computed every 'Step' second
 FC = DataFC;
 K = 6;%Number of subgraph
 lambda=0.4;% parameter for the sparsity level
-gamma=0.2;%parameter for the temporal consistency of the activation profil
+eta=0.2;%parameter for the temporal consistency of the activation profil
 init = 1;%Number of different initialisation (use init=20 or more if you are sure of the parameters and want an ultimate result)
 
-[F,V,cost]=BTND(FC,K,[lambda,lambda,gamma],init);
+[F,V,cost]=BTND(FC,K,[lambda,lambda,eta],init);
 
 
 %%%%Step 4 : Represent the subgraphs and the activation profils
