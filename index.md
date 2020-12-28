@@ -3,7 +3,6 @@ layout: default
 ---
 # Associated publication #
 
-Codes from the article : \
  **Semi-automatic extraction of functional dynamic networks describing patient's epileptic seizures** [[pdf]](./Figures/fneur-11-579725.pdf) [[frontiers]](https://www.frontiersin.org/articles/10.3389/fneur.2020.579725/full)\
 [Gaëtan Frusque](https://frusquegaetan.github.io/), [Pierre Borgnat](https://perso.ens-lyon.fr/pierre.borgnat/), [Paulo Gonçalves](http://perso.ens-lyon.fr/paulo.goncalves/), [Julien Jung](https://www.researchgate.net/profile/Julien_Jung),
 Frontiers in Neurology, 09-2020
