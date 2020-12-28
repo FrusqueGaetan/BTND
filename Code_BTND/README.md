@@ -1,1 +1,0 @@
-For more details on these codes see the corresponding [github-page]( https://frusquegaetan.github.io/BTND/):  https://frusquegaetan.github.io/BTND/
