@@ -36,7 +36,7 @@ set(gca,'XTick',[],'YTick',[])
 
     
        
-%Link representation on a Poincaré disc
+%Link representation on a Poincarï¿½ disc
 color = flip(hot(125));
 Ncolorbar = 100;
 color = color(20:120,:);
@@ -153,3 +153,22 @@ end
 
 
 
+function V =  GetUnderDiag(M,k) %Convert adjacency matrix to vector
+
+    
+   M = squeeze(M);
+   V = zeros(k,k);
+   
+   a = 1;
+   for d = 1:k
+       for j = 1:(k-d)
+        
+               V(d+j,d) = M(a);
+               V(d,d+j) = M(a);
+
+           a = a+1;
+       end
+   end
+   
+    
+end
